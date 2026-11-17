@@ -1,0 +1,27 @@
+name: Build Linux
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code herunterladen
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Pakete installieren
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake ninja-build libvulkan-dev glslang-tools
+
+      - name: Build starten
+        run: bash tools/build/linux.sh
+
+      - name: Fertige Datei bereitstellen
+        uses: actions/upload-artifact@v4
+        with:
+          name: amd_fidelityfx_upscaler_vk-linux
+          path: build/linux/amd_fidelityfx_upscaler_vk.so

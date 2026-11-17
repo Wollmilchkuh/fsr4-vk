@@ -15,17 +15,12 @@ jobs:
       - name: Pakete installieren
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake ninja-build libvulkan-dev glslang-tools spirv-tools python3 curl unzip jq
+          sudo apt-get install -y build-essential cmake ninja-build libvulkan-dev glslang-tools spirv-tools python3
 
-      - name: AMD FidelityFX SDK 2.3.0 herunterladen & Assets extrahieren
+      - name: Eigene DLL aus Release laden & Assets extrahieren
         run: |
-          DOWNLOAD_URL=$(curl -s "https://github.com" | jq -r '.assets[] | select(.name | test("prebuilt|SDK"; "i")) | .browser_download_url' | head -n 1)
-          echo "Lade SDK von: $DOWNLOAD_URL"
-          curl -fL "$DOWNLOAD_URL" -o sdk.zip
-          unzip -q sdk.zip -d sdk_extracted
-          DLL_PATH=$(find sdk_extracted -name "amd_fidelityfx_upscaler_dx12.dll" | head -n 1)
-          echo "Gefundene DLL: $DLL_PATH"
-          python3 tools/setup.py --dll "$DLL_PATH"
+          curl -fL "https://github.com{{ github.repository }}/releases/download/sdk-dll/amd_fidelityfx_upscaler_dx12.dll" -o amd_fidelityfx_upscaler_dx12.dll
+          python3 tools/setup.py --dll amd_fidelityfx_upscaler_dx12.dll
 
       - name: Build starten
         run: bash tools/build/linux.sh
